@@ -1,11 +1,16 @@
 const xlsx = require('xlsx');
 var fs = require('fs');
 const path = require('path')
+require('dotenv').config()
+
+const LAST_NAME = process.env.LAST_NAME // С маленькой буквы свою фамилию как в компе
+const MONTH = process.env.MONTH    // Месяц (01-январь ... 12-декабрь)
+const YEAR = process.env.YEAR   // Год
 
 function convertExcelFileToJsonUsingXlsx() {
 
   // Read the file using pathname
-  const file = xlsx.readFile('./xlsx/data.xlsx');
+  const file = xlsx.readFile(`//srv3/WorkTimes/${LAST_NAME}/${LAST_NAME}_${MONTH}-${YEAR}.xlsx`);
 
   // Grab the sheet info from the file
   const sheetNames = file.SheetNames;
@@ -106,7 +111,7 @@ const print = () => {
   if (partOfMonthTime > 0) {
     status = "Время переработки: "
   } else {
-    status = "Осталось доработать: "
+    status = "Нужно доработать: "
     partOfMonthTime *= -1
   }
   let timeData = getTimeByPartOfTime(partOfMonthTime)
