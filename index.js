@@ -4,8 +4,10 @@ const path = require('path')
 require('dotenv').config()
 
 const LAST_NAME = process.env.LAST_NAME // С маленькой буквы свою фамилию как в компе
-const MONTH = process.env.MONTH    // Месяц (01-январь ... 12-декабрь)
-const YEAR = process.env.YEAR   // Год
+var m = new Date().getMonth() + 1
+var y = new Date().getYear() % 100
+const MONTH = `${m < 10 ? '0' : ''}${m}`//process.env.MONTH
+const YEAR = `20${y}`//process.env.YEAR
 
 function convertExcelFileToJsonUsingXlsx() {
 
@@ -117,7 +119,6 @@ const print = () => {
   let timeData = getTimeByPartOfTime(partOfMonthTime)
   let {h, m, s} = timeData
   console.log(`${status}${(h / 10) > 1 ? "" : "0"}${h}:${(m / 10) > 1 ? "" : "0"}${m}:${(s / 10) > 1 ? "" : "0"}${s}`)
-  
 }
 
 print()
