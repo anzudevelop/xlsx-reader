@@ -1,6 +1,4 @@
 const xlsx = require('xlsx');
-var fs = require('fs');
-const path = require('path')
 require('dotenv').config()
 
 const LAST_NAME = process.env.LAST_NAME // С маленькой буквы свою фамилию как в компе
@@ -8,6 +6,8 @@ var m = new Date().getMonth() + 1
 var y = new Date().getYear() % 100
 const MONTH = `${m < 10 ? '0' : ''}${m}`//process.env.MONTH
 const YEAR = `20${y}`//process.env.YEAR
+
+const notWorkingDaysOfThisYear = process.env.NOT_WORKING_DAYS_OF_THIS_YEAR
 
 const getTimeByPartOfTime = (part) => {
   let h = Math.floor(part * 24)
@@ -56,10 +56,11 @@ function convertExcelFileToJsonUsingXlsx() {
     if(parsedData[i].hasOwnProperty('Перерыв')) parsedData[i]['Перерыв'] = fixTimeToString(parsedData[i]['Перерыв'])
     if(parsedData[i].hasOwnProperty('Итого')) parsedData[i]['Итого'] = fixTimeToString(parsedData[i]['Итого'])
   }
-
   // call a function to save the data in a json file
   return(JSON.stringify(parsedData));
 }
+
+const dataFromXlsx = JSON.parse(convertExcelFileToJsonUsingXlsx())
 
 const findIndexOfDate = (data, day) => {
   for(let i = 0; i < data.length; i++) {
@@ -86,7 +87,7 @@ const executeWorkTimeFromDate = (day) => {
 }
 
 const getFullMonthTime = () => {
-  let data = JSON.parse(convertExcelFileToJsonUsingXlsx())
+  let data = dataFromXlsx
   let fullTime = 0
   for(let i = 0; i < data.length - 1; i++) {
     if(data[i].hasOwnProperty('Пришел')) {
@@ -98,14 +99,14 @@ const getFullMonthTime = () => {
 
 const isWorkDay = (d) => {
   let dayWeek = new Date(`${d.slice(3, 5)}.${d.slice(0, 2)}.${d.slice(6, 10)}`).toLocaleString("en-us", { weekday: "short"})
-  if(dayWeek != 'Sat' && dayWeek != 'Sun') {
+  if(dayWeek != 'Sat' && dayWeek != 'Sun' && !notWorkingDaysOfThisYear.includes(d)) {
     return true
   }
   return false
 }
 
 const getWorkDays = () => {
-  let data = JSON.parse(convertExcelFileToJsonUsingXlsx())
+  let data = dataFromXlsx
   let daysCounter = 0
   for(let i = 0; i < data.length - 1; i++) {
     if(data[i].hasOwnProperty('Пришел') && isWorkDay(data[i]['Дата'])) {
@@ -113,6 +114,28 @@ const getWorkDays = () => {
     }
   }
   return daysCounter
+}
+
+const getTotalWorkDaysOfMonth = () => {
+  let data = dataFromXlsx
+  let daysCounter = 0
+  for(let i = 0; i < data.length - 1; i++) {
+    if(isWorkDay(data[i]['Дата'])) {
+      daysCounter++
+    }
+  }
+  return daysCounter
+}
+
+const getTableData = () => {
+  let data = dataFromXlsx
+  console.log('---------------------------------------------------------------------------')
+  console.log('|     Дата     |    Пришел    |     Ушел     |   Перерыв   |     Итого    |')
+  console.log('---------------------------------------------------------------------------')
+  for (let i = 0; i < data.length - 1 ; i++) {
+    console.log('|  ' + data[i]['Дата'] + '  |   ' + (data[i]['Пришел'] ? data[i]['Пришел'] : '        ') + '   |   ' + (data[i]['Ушел'] ? data[i]['Ушел'] : '        ') + '   |   ' + (data[i]['Пришел'] ? data[i]['Перерыв'] : '        ') + '  |   ' + data[i]['Итого'] + '   |')
+  }
+  console.log('---------------------------------------------------------------------------')
 }
 
 const print = () => {
@@ -130,7 +153,14 @@ const print = () => {
   }
   let timeData = getTimeByPartOfTime(partOfMonthTime)
   let {h, m, s} = timeData
-  console.log(`${status}${(h / 10) > 1 ? "" : "0"}${h}:${(m / 10) > 1 ? "" : "0"}${m}:${(s / 10) > 1 ? "" : "0"}${s}`)
+
+  getTableData()  //Для вывода таблицы со временем
+
+  let response = ''
+  response += `${status}${(h / 10) > 1 ? "" : "0"}${h}:${(m / 10) > 1 ? "" : "0"}${m}:${(s / 10) > 1 ? "" : "0"}${s}\n`
+  response += `В этом месяце отработано ${fixTimeToString(getFullMonthTime())} из ${fixTimeToString((8 / 24) * getTotalWorkDaysOfMonth())}\n`
+
+  console.log(response)
 }
 
 print()
