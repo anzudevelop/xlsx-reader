@@ -9,6 +9,21 @@ var y = new Date().getYear() % 100
 const MONTH = `${m < 10 ? '0' : ''}${m}`//process.env.MONTH
 const YEAR = `20${y}`//process.env.YEAR
 
+const getTimeByPartOfTime = (part) => {
+  let h = Math.floor(part * 24)
+  let m = Math.floor(((part * 24) % 1) * 60)
+  let s = Math.floor(((((part * 24) % 1) * 60) % 1) * 60)
+  return {h, m, s}
+}
+
+let fixTimeToString = (time) => {
+  if (typeof time === 'number') {
+      let result = getTimeByPartOfTime(time)
+      return `${result.h < 10 ? '0' : ''}${result.h}:${result.m < 10 ? '0' : ''}${result.m}:${result.s < 10 ? '0' : ''}${result.s}`
+  }
+  return time
+}
+
 function convertExcelFileToJsonUsingXlsx() {
 
   // Read the file using pathname
@@ -34,16 +49,16 @@ function convertExcelFileToJsonUsingXlsx() {
       parsedData.push(...tempData);
   }
 
- // call a function to save the data in a json file
+  for(let i = 0; i < parsedData.length; i++)
+  {
+    if(parsedData[i].hasOwnProperty('Пришел')) parsedData[i]['Пришел'] = fixTimeToString(parsedData[i]['Пришел'])
+    if(parsedData[i].hasOwnProperty('Ушел')) parsedData[i]['Ушел'] = fixTimeToString(parsedData[i]['Ушел'])
+    if(parsedData[i].hasOwnProperty('Перерыв')) parsedData[i]['Перерыв'] = fixTimeToString(parsedData[i]['Перерыв'])
+    if(parsedData[i].hasOwnProperty('Итого')) parsedData[i]['Итого'] = fixTimeToString(parsedData[i]['Итого'])
+  }
 
- return(JSON.stringify(parsedData));
-}
-
-const getTimeByPartOfTime = (part) => {
-  let h = Math.floor(part * 24)
-  let m = Math.floor(((part * 24) % 1) * 60)
-  let s = Math.floor(((((part * 24) % 1) * 60) % 1) * 60)
-  return {h, m, s}
+  // call a function to save the data in a json file
+  return(JSON.stringify(parsedData));
 }
 
 const findIndexOfDate = (data, day) => {
@@ -74,11 +89,8 @@ const getFullMonthTime = () => {
   let data = JSON.parse(convertExcelFileToJsonUsingXlsx())
   let fullTime = 0
   for(let i = 0; i < data.length - 1; i++) {
-    if(data[i]["Итого"] != 0 || data[i].hasOwnProperty('Пришел')) {
-      fullTime += data[i]["Итого"]
-      if(data[i]["Итого"] == 0) {
-        fullTime += executeWorkTimeFromDate(data[i])
-      }
+    if(data[i].hasOwnProperty('Пришел')) {
+      fullTime += executeWorkTimeFromDate(data[i])
     }
   }
   return fullTime
@@ -96,7 +108,7 @@ const getWorkDays = () => {
   let data = JSON.parse(convertExcelFileToJsonUsingXlsx())
   let daysCounter = 0
   for(let i = 0; i < data.length - 1; i++) {
-    if((data[i]["Итого"] != 0 || data[i].hasOwnProperty('Пришел')) && isWorkDay(data[i]['Дата'])) {
+    if(data[i].hasOwnProperty('Пришел') && isWorkDay(data[i]['Дата'])) {
       daysCounter++
     }
   }
