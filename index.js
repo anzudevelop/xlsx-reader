@@ -147,21 +147,17 @@ const print = () => {
   let partOfMonthTime = getFullMonthTime() - ((8 / 24) * getWorkDays())
   let status = ""
   if (partOfMonthTime > 0) {
-    status = "Время переработки: "
+    status = "Время переработки:"
   } else {
-    status = "Нужно доработать: "
-    partOfMonthTime *= -1
+    status = "Нужно доработать:"
   }
-  let timeData = getTimeByPartOfTime(partOfMonthTime)
+  let timeData = getTimeByPartOfTime(Math.abs(partOfMonthTime))
   let {h, m, s} = timeData
 
   getTableData()  //Для вывода таблицы со временем
 
-  let response = ''
-  response += `${status}${(h / 10) > 1 ? "" : "0"}${h}:${(m / 10) > 1 ? "" : "0"}${m}:${(s / 10) > 1 ? "" : "0"}${s}\n`
-  response += `В этом месяце отработано ${fixTimeToString(getFullMonthTime())} из ${fixTimeToString((8 / 24) * getTotalWorkDaysOfMonth())}\n`
-
-  console.log(response)
+  console.log(status, (partOfMonthTime > 0 ? '\x1b[32m' : '\x1b[31m'), `${(h / 10) >= 1 ? "" : "0"}${h}:${(m / 10) >= 1 ? "" : "0"}${m}:${(s / 10) >= 1 ? "" : "0"}${s}` ,'\x1b[0m')
+  console.log(`В этом месяце отработано ${fixTimeToString(getFullMonthTime())} из ${fixTimeToString((8 / 24) * getTotalWorkDaysOfMonth())}`)
 }
 
 print()
