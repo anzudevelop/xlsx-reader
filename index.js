@@ -137,7 +137,6 @@ const getTableData = () => {
     console.log('|  ' + data[i]['Дата'] + '  |   ' + (data[i]['Пришел'] ? data[i]['Пришел'] : '        ') + '   |   ' + (data[i]['Ушел'] ? data[i]['Ушел'] : '        ') + '   |   ' + (data[i]['Пришел'] ? data[i]['Перерыв'] : '        ') + '  |   ' + (data[i].hasOwnProperty('Пришел') ? fixTimeToString(executeWorkTimeFromDate(data[i])) : '00:00:00') + '   |')
   }
   console.log('---------------------------------------------------------------------------')
-  console.log(data[0]['Итого'] + '<----')
 }
 
 const print = () => {
