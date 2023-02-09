@@ -134,7 +134,8 @@ const getTableData = () => {
   console.log('|     Дата     |    Пришел    |     Ушел     |   Перерыв   |     Итого    |')
   console.log('---------------------------------------------------------------------------')
   for (let i = 0; i < data.length - 1 ; i++) {
-    console.log('|  ' + data[i]['Дата'] + '  |   ' + (data[i]['Пришел'] ? data[i]['Пришел'] : '        ') + '   |   ' + (data[i]['Ушел'] ? data[i]['Ушел'] : '        ') + '   |   ' + (data[i]['Пришел'] ? data[i]['Перерыв'] : '        ') + '  |   ' + (data[i].hasOwnProperty('Пришел') ? fixTimeToString(executeWorkTimeFromDate(data[i])) : '00:00:00') + '   |')
+    let isWorkdayColor = isWorkDay(data[i]['Дата']) ? '\x1b[1m' : ''
+    console.log(isWorkdayColor + '|  ' + data[i]['Дата'] + '  |   ' + (data[i]['Пришел'] ? data[i]['Пришел'] : '        ') + '   |   ' + (data[i]['Ушел'] ? data[i]['Ушел'] : '        ') + '   |   ' + (data[i]['Пришел'] ? data[i]['Перерыв'] : '        ') + '  |   ' + (data[i].hasOwnProperty('Пришел') ? fixTimeToString(executeWorkTimeFromDate(data[i])) : '00:00:00') + '   |\x1b[0m')
   }
   console.log('---------------------------------------------------------------------------')
 }
