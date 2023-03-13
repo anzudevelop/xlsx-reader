@@ -43,7 +43,7 @@ function convertExcelFileToJsonUsingXlsx() {
       const tempData = xlsx.utils.sheet_to_json(file.Sheets[sheetNames[i]]);
 
       // Skip header row which is the colum names
-      tempData.shift();
+      //tempData.shift();
 
       // Add the sheet's json to our data array
       parsedData.push(...tempData);
@@ -133,7 +133,7 @@ const getTableData = () => {
   console.log('---------------------------------------------------------------------------')
   console.log('|     Дата     |    Пришел    |     Ушел     |   Перерыв   |     Итого    |')
   console.log('---------------------------------------------------------------------------')
-  for (let i = 0; i < data.length - 1 ; i++) {
+  for (let i = 0; i < data.length ; i++) {
     let isWorkdayColor = isWorkDay(data[i]['Дата']) ? '\x1b[1m' : ''
     console.log(isWorkdayColor + '|  ' + data[i]['Дата'] + '  |   ' + (data[i]['Пришел'] ? data[i]['Пришел'] : '        ') + '   |   ' + (data[i]['Ушел'] ? data[i]['Ушел'] : '        ') + '   |   ' + (data[i]['Пришел'] ? data[i]['Перерыв'] : '        ') + '  |   ' + (data[i].hasOwnProperty('Пришел') ? fixTimeToString(executeWorkTimeFromDate(data[i])) : '00:00:00') + '   |\x1b[0m')
   }
