@@ -1,4 +1,5 @@
 const xlsx = require('xlsx');
+const fs = require("fs");
 require('dotenv').config()
 
 const LAST_NAME = process.env.LAST_NAME // С маленькой буквы свою фамилию как в компе
@@ -140,6 +141,24 @@ const getTableData = () => {
   console.log('---------------------------------------------------------------------------')
 }
 
+const getEndTime = () => {
+  const now = new Date();
+  const readValue = fs.readFileSync('date.json', 'utf8')
+  const year = Number(readValue.slice(1, 5))
+  const month = Number(readValue.slice(6, 8))
+  const day = Number(readValue.slice(9, 11))
+  let h = Number(readValue.slice(12,14))
+  let m = Number(readValue.slice(15,17))
+  let s = Number(readValue.slice(18,20))
+  if ((now.getMonth() + 1) == month && now.getDate() == day) {
+    if (m >= 30) {
+      m -= 30
+      h += 1
+    } else m+= 30
+    console.log('\x1b[36m' + `Окончание работы: ${(h + 8) < 10 ? `0${(h + 8)}` : (h + 8)}:${m < 10 ? `0${m}` : m}:${s < 10 ? `0${s}` : s}` + '\x1b[0m')
+  }
+}
+
 const print = () => {
   //let data = JSON.parse(convertExcelFileToJsonUsingXlsx())
   //let day = 19
@@ -158,6 +177,7 @@ const print = () => {
   getTableData()  //Для вывода таблицы со временем
 
   console.log(status, (partOfMonthTime > 0 ? '\x1b[32m' : '\x1b[31m'), `${(h / 10) >= 1 ? "" : "0"}${h}:${(m / 10) >= 1 ? "" : "0"}${m}:${(s / 10) >= 1 ? "" : "0"}${s}` ,'\x1b[0m')
+  getEndTime();
   console.log(`В этом месяце отработано ${fixTimeToString(getFullMonthTime())} из ${fixTimeToString((8 / 24) * getTotalWorkDaysOfMonth())}`)
 }
 
