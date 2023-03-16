@@ -156,20 +156,7 @@ const getEndTime = () => {
       h += 1
     } else m+= 30
     let endTime = `${(h + 8) < 10 ? `0${(h + 8)}` : (h + 8)}:${m < 10 ? `0${m}` : m}:${s < 10 ? `0${s}` : s}`
-    let endWork = new Date(year, month - 1, day, h + 7, m, s)
-    let difference = ((endWork.getTime() - now.getTime())/1000).toFixed(0)
-    let complete = false
-    if(difference < 0) {
-        complete = true
-        difference *= -1
-    }
-    m = (difference / 60).toFixed(0)
-    s = (difference % 60)
-    h = (m / 60).toFixed(0)
-    m = (m % 60)
-
-    let totalTime = (h > 9 ? h : `0${h}`) + ":" + (m > 9 ? m : `0${m}`) + ":" + (s > 9 ? s : `0${s}`)
-    console.log((complete ? `Сегодня переработно: \x1b[36m${totalTime}` : `Осталось работать: \x1b[36m${totalTime}`) + `\x1b[0m (Окончание: ${endTime})`)  
+    console.log('Конец рабочего дня: \x1b[36m' + endTime + '\x1b[0m')
   }
 }
 
