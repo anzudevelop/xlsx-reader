@@ -157,7 +157,7 @@ const getEndTime = () => {
     } else m+= 30
     let endTime = `${(h + 8) < 10 ? `0${(h + 8)}` : (h + 8)}:${m < 10 ? `0${m}` : m}:${s < 10 ? `0${s}` : s}`
     let endWork = new Date(year, month - 1, day, h + 7, m, s)
-    let difference = ((endWork - now)/1000).toFixed(0)
+    let difference = ((endWork.getTime() - now.getTime())/1000).toFixed(0)
     let complete = false
     if(difference < 0) {
         complete = true
